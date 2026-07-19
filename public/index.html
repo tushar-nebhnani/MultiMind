@@ -1,0 +1,308 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>MultiMind - Multi-Model Self-Consistency Orchestrator</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body class="dark-mode">
+    <div class="app-container">
+      <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+          <div class="logo">
+            <div class="logo-icon">
+              <i class="fa-solid fa-brain text-accent"></i>
+            </div>
+            <span class="logo-text"
+              >Multi<span class="text-accent">Mind</span></span
+            >
+          </div>
+          <button class="sidebar-close" id="sidebarCloseBtn">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </div>
+
+        <div class="history-section">
+          <div class="history-title-row">
+            <h3><i class="fa-solid fa-history"></i> History</h3>
+            <button id="clearHistoryBtn" title="Clear All History">
+              <i class="fa-solid fa-trash-can"></i>
+            </button>
+          </div>
+          <div class="history-list" id="historyList">
+            <div class="history-empty">
+              <i class="fa-solid fa-folder-open"></i>
+              <p>No queries yet</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Theme Toggle Button at Bottom of Sidebar -->
+        <div class="theme-toggle-container">
+          <label class="switch">
+            <input type="checkbox" id="themeToggle" checked />
+            <span class="slider round">
+              <span class="knob"></span>
+            </span>
+          </label>
+        </div>
+
+        <div class="sidebar-footer">
+          <div class="footer-status">
+            <span class="status-at">@</span>
+            <span>ChaiCode</span>
+          </div>
+        </div>
+      </aside>
+
+      <main class="main-panel">
+        <header class="main-header">
+          <div class="header-left">
+            <button class="menu-toggle" id="menuToggleBtn">
+              <i class="fa-solid fa-bars"></i>
+            </button>
+            <h1>MultiMind Orchestrator</h1>
+          </div>
+          <div class="model-badges">
+            <div class="model-badge">
+              <span class="badge-dot dot-openai"></span>
+              <span class="badge-name">OpenAI GPT-4o</span>
+            </div>
+            <div class="model-badge">
+              <span class="badge-dot dot-groq"></span>
+              <span class="badge-name">Groq Llama 3.3</span>
+            </div>
+            <div class="model-badge">
+              <span class="badge-dot dot-openrouter"></span>
+              <span class="badge-name">OpenRouter Free</span>
+            </div>
+          </div>
+        </header>
+
+        <div class="dashboard-content">
+          <section class="card input-card">
+            <div class="card-header">
+              <h2>
+                <i class="fa-regular fa-lightbulb text-accent"></i> Enter Prompt
+              </h2>
+              <span class="char-counter" id="charCounter">0 / 2000</span>
+            </div>
+            <div class="input-container">
+              <textarea
+                id="promptInput"
+                placeholder="Ask anything to run it through the self-consistency engine... (e.g., Explain JWT using a simple analogy)"
+                maxlength="2000"
+                rows="4"
+              ></textarea>
+            </div>
+            <div class="actions-row">
+              <div class="quick-examples">
+                <span
+                  class="example-tag"
+                  data-prompt="Explain JWT (JSON Web Tokens) using a simple real-world analogy"
+                  >JWT Analogy</span
+                >
+                <span
+                  class="example-tag"
+                  data-prompt="Explain what debouncing is in JavaScript and write a custom debounce function"
+                  >Debounce in JS</span
+                >
+                <span
+                  class="example-tag"
+                  data-prompt="Compare REST APIs and GraphQL simply, explaining when to use which"
+                  >REST vs GraphQL</span
+                >
+              </div>
+              <button class="btn btn-primary" id="generateBtn">
+                <span>Evaluate Answer</span>
+              </button>
+            </div>
+          </section>
+
+          <section class="card loading-card hidden" id="loadingCard">
+            <div class="loading-header">
+              <div class="spinner-container">
+                <div class="pulse-ring"></div>
+                <i
+                  class="fa-solid fa-brain loading-spinner text-accent"
+                ></i>
+              </div>
+              <div class="loading-title">
+                <h3>Orchestrating MultiMind Engine...</h3>
+                <p>Querying independent models in parallel</p>
+              </div>
+              <button class="btn-stop" id="stopGenerationBtn" title="Stop Evaluation">
+                <i class="fa-solid fa-circle-stop"></i> Stop
+              </button>
+            </div>
+            <div class="orchestration-steps">
+              <div class="step" id="step-openai">
+                <div class="step-icon">
+                  <i class="fa-solid fa-circle-notch fa-spin"></i>
+                </div>
+                <div class="step-info">
+                  <span class="step-name"
+                    >Querying OpenAI Cluster (GPT-4o)</span
+                  >
+                  <span class="step-status">In progress...</span>
+                </div>
+              </div>
+              <div class="step" id="step-groq">
+                <div class="step-icon">
+                  <i class="fa-solid fa-circle-notch fa-spin"></i>
+                </div>
+                <div class="step-info">
+                  <span class="step-name"
+                    >Querying Groq Cluster (Llama 3.3 70B)</span
+                  >
+                  <span class="step-status">In progress...</span>
+                </div>
+              </div>
+              <div class="step" id="step-openrouter">
+                <div class="step-icon">
+                  <i class="fa-solid fa-circle-notch fa-spin"></i>
+                </div>
+                <div class="step-info">
+                  <span class="step-name"
+                    >Querying OpenRouter (Free Tier Models)</span
+                  >
+                  <span class="step-status">In progress...</span>
+                </div>
+              </div>
+              <div class="step" id="step-synthesis">
+                <div class="step-icon">
+                  <i class="fa-regular fa-circle"></i>
+                </div>
+                <div class="step-info">
+                  <span class="step-name"
+                    >Meta-Evaluation & Final Consensus Synthesis</span
+                  >
+                  <span class="step-status">Waiting...</span>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <section class="results-section hidden" id="resultsSection">
+            <!-- Navigation Tabs -->
+            <div class="results-tabs">
+              <button class="tab-btn active" data-tab="consensusTab">
+                <i class="fa-solid fa-shield-check"></i> Final Answer
+              </button>
+              <button class="tab-btn" data-tab="rawModelsTab">
+                <i class="fa-solid fa-code-compare"></i> Model Breakdowns
+              </button>
+            </div>
+
+            <div class="tab-panel active" id="consensusTab">
+              <div class="card result-card">
+                <div class="result-header">
+                  <div class="result-title">
+                    <i class="fa-solid fa-wand-magic-sparkles text-accent"></i>
+                    <h3>Final Answer</h3>
+                  </div>
+                  <div class="result-actions">
+                    <button
+                      class="btn-icon"
+                      id="copyConsensusBtn"
+                      title="Copy to clipboard"
+                    >
+                      <i class="fa-regular fa-copy"></i>
+                    </button>
+                  </div>
+                </div>
+                <div
+                  class="result-content markdown-body"
+                  id="consensusOutput"
+                ></div>
+              </div>
+            </div>
+
+            <div class="tab-panel" id="rawModelsTab">
+              <div class="models-grid">
+                <div class="card model-response-card">
+                  <div class="model-response-header">
+                    <div class="header-left">
+                      <span class="badge-dot dot-openai"></span>
+                      <h4>OpenAI GPT-4o</h4>
+                    </div>
+                    <button
+                      class="btn-icon copy-model-btn"
+                      data-target="openaiRawText"
+                      title="Copy Raw Response"
+                    >
+                      <i class="fa-regular fa-copy"></i>
+                    </button>
+                  </div>
+                  <div
+                    class="model-response-body markdown-body"
+                    id="openaiRawOutput"
+                  ></div>
+                </div>
+
+                <div class="card model-response-card">
+                  <div class="model-response-header">
+                    <div class="header-left">
+                      <span class="badge-dot dot-groq"></span>
+                      <h4>Groq Llama 3.3</h4>
+                    </div>
+                    <button
+                      class="btn-icon copy-model-btn"
+                      data-target="groqRawText"
+                      title="Copy Raw Response"
+                    >
+                      <i class="fa-regular fa-copy"></i>
+                    </button>
+                  </div>
+                  <div
+                    class="model-response-body markdown-body"
+                    id="groqRawOutput"
+                  ></div>
+                </div>
+
+                <div class="card model-response-card">
+                  <div class="model-response-header">
+                    <div class="header-left">
+                      <span class="badge-dot dot-openrouter"></span>
+                      <h4>OpenRouter Free</h4>
+                    </div>
+                    <button
+                      class="btn-icon copy-model-btn"
+                      data-target="openrouterRawText"
+                      title="Copy Raw Response"
+                    >
+                      <i class="fa-regular fa-copy"></i>
+                    </button>
+                  </div>
+                  <div
+                    class="model-response-body markdown-body"
+                    id="openrouterRawOutput"
+                  ></div>
+                </div>
+              </div>
+            </div>
+          </section>
+        </div>
+      </main>
+    </div>
+
+    <textarea id="openaiRawText" class="hidden"></textarea>
+    <textarea id="groqRawText" class="hidden"></textarea>
+    <textarea id="openrouterRawText" class="hidden"></textarea>
+    <textarea id="consensusRawText" class="hidden"></textarea>
+
+    <script src="app.js"></script>
+  </body>
+</html>
