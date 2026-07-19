@@ -35,8 +35,8 @@ Ensure you have [Node.js](https://nodejs.org/) installed (v18.0.0 or higher is r
 
 ### 2. Clone the Repository
 ```bash
-git clone https://github.com/tushar-nebhnani/Self-Consistency-Model.git
-cd Self-Consistency-Model
+git clone https://github.com/tushar-nebhnani/MultiMind.git
+cd MultiMind
 ```
 
 ### 3. Configure Environment Variables
